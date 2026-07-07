@@ -678,6 +678,7 @@ def main():
                     pass  # ここにバトルイベントなどを追加
                 if game_map.check_move(player.row, player.col) == 3:  # 移動した先がボスかの判定
                     lastbattle(screen, clock)
+                    return  # ゲーム終了
 
         screen.fill(WHITE)  # 背景仮(一番最初に描画)
         game_map.update_line(screen)  # 枠線表示（デバッグ用）
