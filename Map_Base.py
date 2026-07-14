@@ -503,6 +503,9 @@ class TileBroke_Tile(pg.sprite.Sprite):
     def __init__(self, x, y,TILE_SIZE):
         super().__init__()
         self.timer = random.randint(20,5000)
+        img = pg.image.load("img/rock.png").convert_alpha()  # 現時点仮の岩画像
+        Rock.base_image = pg.transform.scale(img, (90, 90))
+        self.image = img  # 壊れたタイル
         self.image = pg.Surface((TILE_SIZE, TILE_SIZE))  # 壊れたタイル
         self.image.fill(RED)  # 落ちた先
         self.rect = self.image.get_rect()
@@ -534,22 +537,22 @@ class TilePlayer(pg.sprite.Sprite):
 
     def __init__(self, num: int, xy: tuple[int, int]):
         """
-        こうかとん画像Surfaceを生成する
-        引数1 num：こうかとん画像ファイル名の番号
-        引数2 xy：こうかとん画像の位置座標タプル
+        画像Surfaceを生成する
+        引数1 num：画像ファイル名の番号
+        引数2 xy：画像の位置座標タプル
         """
         super().__init__()
-        img0 = pg.transform.rotozoom(pg.image.load(f"img/player.png"), 0, 0.9)
-        img = pg.transform.flip(img0, True, False)  # デフォルトのこうかとん
+        img0 = pg.transform.rotozoom(pg.image.load(f"img/player.png"), 0, 1.5)
+        img = pg.transform.flip(img0, True, False)  # デフォルト
         self.imgs = {
-            (+1, 0): img,  # 右
-            (+1, -1): pg.transform.rotozoom(img, 45, 0.9),  # 右上
-            (0, -1): pg.transform.rotozoom(img, 90, 0.9),  # 上
-            (-1, -1): pg.transform.rotozoom(img0, -45, 0.9),  # 左上
-            (-1, 0): img0,  # 左
-            (-1, +1): pg.transform.rotozoom(img0, 45, 0.9),  # 左下
-            (0, +1): pg.transform.rotozoom(img, -90, 0.9),  # 下
-            (+1, +1): pg.transform.rotozoom(img, -45, 0.9),  # 右下
+            (+1, 0): img0,  # 右
+            (+1, -1): pg.transform.rotozoom(img0, 45, 0.9),  # 右上
+            (0, -1): pg.transform.rotozoom(img0, 90, 0.9),  # 上
+            (-1, -1): pg.transform.rotozoom(img, -45, 0.9),  # 左上
+            (-1, 0): img,  # 左
+            (-1, +1): pg.transform.rotozoom(img, 45, 0.9),  # 左下
+            (0, +1): pg.transform.rotozoom(img0, -90, 0.9),  # 下
+            (+1, +1): pg.transform.rotozoom(img0, -45, 0.9),  # 右下
         }
         self.dire = (+1, 0)
         self.image = self.imgs[self.dire]
@@ -559,18 +562,18 @@ class TilePlayer(pg.sprite.Sprite):
         self.state = "normal"  # 追加点
         self.hyper_life = 0  # 追加点
 
-    def change_img(self, num: int, screen: pg.Surface):
+    def change_img(self,screen: pg.Surface):
         """
-        こうかとん画像を切り替え，画面に転送する
+        画像を切り替え，画面に転送する
         引数1 num：こうかとん画像ファイル名の番号
         引数2 screen：画面Surface
         """
-        self.image = pg.transform.rotozoom(pg.image.load(f"fig/{num}.png"), 0, 0.9)
+        self.image = pg.transform.rotozoom(pg.image.load(f"img/player.png"), 0, 0.9)
         screen.blit(self.image, self.rect)
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
         """
-        押下キーに応じてこうかとんを移動させる
+        押下キーに応じてを移動させる
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
@@ -1023,6 +1026,12 @@ class BossPreviewBullet(BossBaseBullet):
 
 
 def tile_game() -> str:
+    pg.mixer.music.load("sound/boss_bgm.wav")  # BGM定義
+    pg.mixer.music.set_volume(0.3)  # BGM音量調整
+    pg.mixer.music.play(loops = -1)  # BGMループ
+    linear_bullet_snd = pg.mixer.Sound("sound/boss_linear_bullet.wav")  # 効果音定義
+    linear_bullet_snd.set_volume(0.5)  # 音量調整
+
     pg.display.set_caption("タイル落下ゲーム")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.Surface((WIDTH, HEIGHT))
@@ -1065,6 +1074,7 @@ def tile_game() -> str:
 
         for item in pg.sprite.spritecollide(bird, items, True): #プレイヤーがitemを取得したか判定
             point.point+=1
+            linear_bullet_snd.play()
             item.kill()
 
         if (point.point/itemnum)>0.6:
