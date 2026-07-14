@@ -311,6 +311,7 @@ class Rock(pg.sprite.Sprite):
     """
     岩に関するもの
     """
+
     def __init__(self, coor: tuple[int, int]):
         """
         引数：マスの中心座標tuple(x, y)
@@ -1672,7 +1673,6 @@ def main():
             enemys.draw(screen)  # 敵を描画
             bossgp.draw(screen)  # ボスを描画
             players.draw(screen)  # プレイヤーを描画
-            
         elif game_state == "BATTLE":
             # バトルUIの描画
             if current_enemy:
@@ -1688,7 +1688,6 @@ def main():
             pg.draw.rect(screen, WHITE, (50, 500, 1140, 150), 3)
             player_hp_txt = font.render(f"{player.name} HP: {player.hp}/{player.max_hp}", True, WHITE)
             screen.blit(player_hp_txt, (100, 520))
-            
             
             if battle_phase == "COMMAND":
                 screen.blit(font.render("たたかう", True, WHITE), (800, 520))
