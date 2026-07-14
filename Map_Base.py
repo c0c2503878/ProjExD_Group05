@@ -1841,7 +1841,6 @@ def lastbattle(screen: pg.Surface, clock: pg.time.Clock) -> bool:
         clock.tick(FPS)
     return True
 
-
 if __name__ == "__main__":
     pg.init()
     main()
